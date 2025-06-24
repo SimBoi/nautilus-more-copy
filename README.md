@@ -13,7 +13,7 @@ Check my [nautilus extension collection](https://github.com/SimBoi/nautilus-exte
 	sudo apt install -y python3-nautilus
 	# 2. download the extension script
 	mkdir -p ~/.local/share/nautilus-python/extensions
-	curl -L -o ~/.local/share/nautilus-python/extensions/nautilus-more-copy.py https://raw.githubusercontent.com/not_simboi/nautilus-more-copy/main/nautilus-more-copy.py
+	curl -L -o ~/.local/share/nautilus-python/extensions/nautilus-more-copy.py https://raw.githubusercontent.com/simboi/nautilus-more-copy/main/nautilus-more-copy.py
 	# 3. restart nautilus
 	nautilus -q
 	```
