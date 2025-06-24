@@ -24,17 +24,18 @@ class MoreCopyExtension(GObject.GObject, Nautilus.MenuProvider):
         self,
         files: List[Nautilus.FileInfo],
     ) -> List[Nautilus.MenuItem]:
-        return self.generate_menu(files)
+        return self.generate_menu(files, False)
 
     def get_background_items(
         self,
         current_folder: Nautilus.FileInfo,
     ) -> List[Nautilus.MenuItem]:
-        return self.generate_menu([current_folder])
+        return self.generate_menu([current_folder], True)
 
     def generate_menu(
         self,
         files: List[Nautilus.FileInfo],
+        is_background: bool,
     ) -> List[Nautilus.MenuItem]:
         submenu = Nautilus.Menu()
 
@@ -42,31 +43,31 @@ class MoreCopyExtension(GObject.GObject, Nautilus.MenuProvider):
         is_directory = not multiple_files and files[0].is_directory()
 
         copy_path_item = Nautilus.MenuItem(
-            name="MoreCopyExtension::CopyPath",
+            name="MoreCopyExtension::CopyPath" + "Background" if is_background else "",
             label="Copy Directory Path" if is_directory else "Copy File Paths" if multiple_files else "Copy File Path",
             tip="",
             icon="",
         )
         copy_path_item.connect(
             "activate",
-            lambda menu_item, files=files: self.copy_path(files),
+            lambda menu_item, files=files: self.copy_paths(files),
         )
 
         copy_name_item = Nautilus.MenuItem(
-            name="MoreCopyExtension::CopyName",
+            name="MoreCopyExtension::CopyName" + "Background" if is_background else "",
             label="Copy Directory Name" if is_directory else "Copy File Names" if multiple_files else "Copy File Name",
             tip="",
             icon="",
         )
         copy_name_item.connect(
             "activate",
-            lambda menu_item, files=files: self.copy_name(files),
+            lambda menu_item, files=files: self.copy_names(files),
         )
 
         submenu.append_item(copy_path_item)
         submenu.append_item(copy_name_item)
         menu_item = Nautilus.MenuItem(
-            name="MoreCopyExtension::MoreCopy",
+            name="MoreCopyExtension::MoreCopy" + "Background" if is_background else "",
             label="Copy Path/Name",
             tip="",
             icon="edit-copy",
@@ -77,12 +78,12 @@ class MoreCopyExtension(GObject.GObject, Nautilus.MenuProvider):
             menu_item,
         ]
 
-    def copy_path(self, files: List[Nautilus.FileInfo]) -> None:
+    def copy_paths(self, files: List[Nautilus.FileInfo]) -> None:
         paths = [file.get_location().get_path() for file in files]
         app = ClipboardApp("\n".join(paths))
         app.run()
 
-    def copy_name(self, files: List[Nautilus.FileInfo]) -> None:
-        names = [file.get_name() for file in files]
+    def copy_names(self, files: List[Nautilus.FileInfo]) -> None:
+        names = [file.get_name().replace('/', '') for file in files]
         app = ClipboardApp("\n".join(names))
         app.run()
